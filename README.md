@@ -1,5 +1,5 @@
 # yuanshen_wallpaper_downloader
-用python的selenium库获取原神官方发布的壁纸
+用python的selenium库获取原神官方发布的壁纸（有下载链接下载下载链接，若没有直接下载
 
 详见[https://www.hoyolab.com/creatorCollection/526679](https://www.hoyolab.com/creatorCollection/526679)
 
