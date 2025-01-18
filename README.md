@@ -1,0 +1,2 @@
+# yuanshen_wallpaper_downloader
+用python的selenium库获取原神官方发布的壁纸
