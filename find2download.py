@@ -54,26 +54,41 @@ for url in list:
     if not os.path.exists(title):
         os.mkdir(title)
     elements = driver.find_elements(By.CLASS_NAME, "blot-link")
-    for element in elements:
-        print("元素href属性:", element.get_attribute("href"))
-        if len(element.get_attribute("href"))<=26:
-            download_url.append(element.get_attribute("href"))
-            if not os.path.exists(title + "/" + element.get_attribute("href").split("/")[-1] + ".zip"):
-                wget.download(element.get_attribute("href"), out=title + "/" + element.get_attribute("href").split("/")[-1] + ".zip", bar=progress_bar)
-            else:
-                print("文件已存在")
-        else:
-            print("未找到下载链接,开始查询页面图片")
-            imgelements = driver.find_elements(By.CLASS_NAME, "ql-image-mask-wrapper")
-            for img in imgelements:
-                print(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
-                webimg.append(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
-                if not os.path.exists(title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1])):
-                    wget.download(img.find_element(By.TAG_NAME, "img").get_attribute("large"), out=title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1]), bar=progress_bar)
+
+    if not len(elements)== 0:
+        for element in elements:
+            print("元素href属性:", element.get_attribute("href"))
+            if len(element.get_attribute("href"))<=26:
+                download_url.append(element.get_attribute("href"))
+                if not os.path.exists(title + "/" + element.get_attribute("href").split("/")[-1] + ".zip"):
+                    wget.download(element.get_attribute("href"), out=title + "/" + element.get_attribute("href").split("/")[-1] + ".zip", bar=progress_bar)
                 else:
                     print("文件已存在")
-        time.sleep(np.random.randint(3, 6))
+            else:
+                print("未找到下载链接,开始查询页面图片")
+                imgelements = driver.find_elements(By.CLASS_NAME, "ql-image-mask-wrapper")
+                for img in imgelements:
+                    print(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
+                    webimg.append(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
+                    if not os.path.exists(title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1])):
+                        wget.download(img.find_element(By.TAG_NAME, "img").get_attribute("large"), out=title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1]), bar=progress_bar)
+                    else:
+                        print("文件已存在")
+
+
+    else:
+        print("未找到任何链接,开始查询页面图片")
+        imgelements = driver.find_elements(By.CLASS_NAME, "ql-image-mask-wrapper")
+        for img in imgelements:
+            print(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
+            webimg.append(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
+            if not os.path.exists(title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1])):
+                wget.download(img.find_element(By.TAG_NAME, "img").get_attribute("large"), out=title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1]), bar=progress_bar)
+            else:
+                print("文件已存在")
+        # time.sleep(np.random.randint(3, 6))
         # driver.quit()
+
 
 
 with open("download.txt", "w", encoding="utf-8") as file:
