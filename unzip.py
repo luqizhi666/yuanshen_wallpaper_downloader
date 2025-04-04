@@ -18,6 +18,7 @@ def unzip_all(directory):
                     print(f'Unzipped {file_path} to {extract_path}')
                     # 递归解压新解压出的文件夹中的压缩包
                     unzip_all(extract_path)
+                    os.remove(file_path)  # 删除原始ZIP文件
                 else:
                     print(f'Skipped {file_path}, not a valid zip file')
 
