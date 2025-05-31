@@ -23,5 +23,5 @@ def unzip_all(directory):
                     print(f'Skipped {file_path}, not a valid zip file')
 
 if __name__ == "__main__":
-    directory = 'C:/Users/17080/Documents/yswallpaper'  # Change this to your target directory
+    directory = '.'  # Change this to your target directory
     unzip_all(directory)

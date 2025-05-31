@@ -12,7 +12,7 @@ import tempfile
 sys.stdout.reconfigure(encoding='utf-8') # 设置标准输出流的编码为utf-8
 
 
-file = open("src.txt", "w", encoding="utf-8")
+file = open("src.txt", "r", encoding="utf-8")
 list = []
 
 # 临时 user data 目录，避免冲突
@@ -79,10 +79,13 @@ except Exception as e:
 # element.click()
 driver.quit()
 
-driver.quit()
-print(list)
-for i in list:
-    file.write(i)
-    file.write("\n")
-# file.write(str(list))
+havegot=file.readlines()
+print("got:",list)
 file.close()
+shoulddownload = [x for x in list if x not in havegot]
+print("shoulddownload:", shoulddownload)
+with open("shoulddownload.txt", "w", encoding="utf-8") as file:
+    for i in shoulddownload:
+        file.write(i)
+        file.write("\n")
+    # file.write(str(list))

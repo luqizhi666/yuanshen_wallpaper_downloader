@@ -30,7 +30,7 @@ def progress_bar(current, total, width=80):
 
 sys.stdout.reconfigure(encoding='utf-8') # 设置标准输出流的编码为utf-8
 list = []
-file = open("src.txt", "r", encoding="utf-8")
+file = open("shoulddownload.txt", "r", encoding="utf-8")
 lines = file.read().splitlines()
 for line in lines:
     print(line)
@@ -119,3 +119,10 @@ with open("download.txt", "w", encoding="utf-8") as file:
 with open("webimg.txt", "w", encoding="utf-8") as file:
     for url in webimg:
         file.write(url + "\n")
+with open("src.txt", "rw", encoding="utf-8") as file:
+    base = file.readlines()
+    alllinks = base + list
+    for url in alllinks:
+        file.write(url + "\n")
+with open("shoulddownload.txt", "w", encoding="utf-8") as file:
+        file.write("i'm finished!")  # 清空 shoulddownload.txt 文件内容
