@@ -4,10 +4,12 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.edge.options import Options
 import sys
 import time
 import os
 import numpy as np # 导入numpy库并简写为np
+import tempfile
 
 
 import re
@@ -39,8 +41,25 @@ file.close()
 download_url = []
 webimg = []
 
-options = webdriver.EdgeOptions()
+
+# 临时 user data 目录，避免冲突
+temp_user_data_dir = tempfile.mkdtemp()
+
+# 配置 Edge 启动选项
+options = Options()
+options.add_argument("--headless=new")  # 新版无头模式
+options.add_argument("--disable-gpu")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--lang=zh_CN.UTF-8")  # 设置中文语言
+options.add_argument("--inprivate")  # 隐私模式
+options.add_argument(f"--user-data-dir={temp_user_data_dir}")  # 指定唯一 user-data-dir
 options.add_argument('lang=zh_CN.UTF-8') # 设置中文
+
+# 设置 Edge 二进制路径（GitHub Actions 上必须）
+options.binary_location = "/usr/bin/microsoft-edge"
+
+# 启动 driver
 driver = webdriver.Edge(options=options)
 for url in list:
     driver.get(url)
