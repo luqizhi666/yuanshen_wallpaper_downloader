@@ -28,8 +28,9 @@ options.add_argument("--lang=zh_CN.UTF-8")  # 设置中文语言
 options.add_argument("--inprivate")  # 隐私模式
 options.add_argument(f"--user-data-dir={temp_user_data_dir}")  # 指定唯一 user-data-dir
 
-# 设置 Edge 二进制路径（GitHub Actions 上必须）
-options.binary_location = "/usr/bin/microsoft-edge"
+if os.name != "nt":
+    # 设置 Edge 二进制路径（GitHub Actions 上必须）
+    options.binary_location = "/usr/bin/microsoft-edge"
 
 # 启动 driver
 driver = webdriver.Edge(options=options)
@@ -82,3 +83,7 @@ for link in links:
             file.write(response.content)
 driver.quit()
 
+with open("downloaded.txt", "a") as file:
+    alllinks = downloaded + shoulddownload
+    for link in alllinks:
+        file.write(link + "\n")
