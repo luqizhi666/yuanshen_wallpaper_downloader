@@ -18,9 +18,16 @@ options = webdriver.EdgeOptions()
 options.add_argument('lang=zh_CN.UTF-8') # 设置中文
 driver = webdriver.Edge(options=options)
 edge_options = Options()
-edge_options.add_argument("--headless")  # 启用无头模式
+    
+# 无头模式配置（新版语法）
+options.add_argument("--headless=new")
 
+# Linux 必需参数
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
 
+# 方案1：使用隐私模式（推荐）
+options.add_argument("--inprivate")
 
 driver.get("https://www.hoyolab.com/creatorCollection/526679?utm_source=hoyolab&utm_medium=tools&lang=zh-cn&bbs_theme=light&bbs_theme_device=1")
 

@@ -12,6 +12,17 @@ jobs:  # 定义作业
     # - name: Print Edge version
     #   run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
 
+    - name: edgedriver
+      run: |
+            wget https://msedgedriver.azureedge.net/LATEST_STABLE
+            wget https://msedgedriver.azureedge.net/$(cat LATEST_STABLE)/edgedriver_linux64.zip
+            unzip edgedriver_linux64.zip
+            chmod +x msedgedriver
+            sudo mv msedgedriver /usr/local/bin/
+            rm LATEST_STABLE edgedriver_linux64.zip
+
+
+
     - name: Checkout repository
       uses: actions/checkout@v4
     
@@ -28,7 +39,7 @@ jobs:  # 定义作业
             cat download.txt
             cat webimg.txt
             ls -l
-            
+
     - name: Run python script calendar.py
       run: |
         cd .\日历壁纸\calender.py
