@@ -19,7 +19,6 @@ edge_options.add_argument("--headless")  # 启用无头模式
 
 
 temp_dir = tempfile.mkdtemp(prefix="edge_")
-options.add_argument(f"--user-data-dir={temp_dir}")
 # driver = webdriver.Chrome()
 
 driver.get("https://www.hoyolab.com/creatorCollection/526679?utm_source=hoyolab&utm_medium=tools&lang=zh-cn&bbs_theme=light&bbs_theme_device=1")
