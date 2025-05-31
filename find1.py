@@ -17,6 +17,10 @@ options.add_argument('lang=zh_CN.UTF-8') # 设置中文
 driver = webdriver.Edge(options=options)
 edge_options.add_argument("--headless")  # 启用无头模式
 
+
+options.add_argument("--inprivate")  # 隐私模式
+options.add_argument("--user-data-dir=/tmp/edge_profile")  # 使用临时目录
+
 # driver = webdriver.Chrome()
 
 driver.get("https://www.hoyolab.com/creatorCollection/526679?utm_source=hoyolab&utm_medium=tools&lang=zh-cn&bbs_theme=light&bbs_theme_device=1")
