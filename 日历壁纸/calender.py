@@ -5,20 +5,34 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.webdriver.edge.options import Options
 
-
+import tempfile
 import os
 import requests
 import time
 
 import sys
-import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 links=[]
-driver = webdriver.Edge()
-# 设置 Edge 无头模式
-edge_options = Options()
-edge_options.add_argument("--headless")  # 启用无头模式
+
+# 临时 user data 目录，避免冲突
+temp_user_data_dir = tempfile.mkdtemp()
+
+# 配置 Edge 启动选项
+options = Options()
+options.add_argument("--headless=new")  # 新版无头模式
+options.add_argument("--disable-gpu")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--lang=zh_CN.UTF-8")  # 设置中文语言
+options.add_argument("--inprivate")  # 隐私模式
+options.add_argument(f"--user-data-dir={temp_user_data_dir}")  # 指定唯一 user-data-dir
+
+# 设置 Edge 二进制路径（GitHub Actions 上必须）
+options.binary_location = "/usr/bin/microsoft-edge"
+
+# 启动 driver
+driver = webdriver.Edge(options=options)
 
 driver.get("https://genshin.hoyoverse.com/en/news/398")
 while True:
