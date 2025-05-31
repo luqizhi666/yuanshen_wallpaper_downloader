@@ -51,3 +51,21 @@ jobs:  # 定义作业
         cd .\日历壁纸\calender.py
         python calendar.py
         ls -l
+    
+    - name: generate html
+      run: |
+        python show.py
+        ls -l
+
+
+
+    - name: Commit files
+      run: |
+        git config --local user.email "luqizhi666@gmail.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -a -m "AUTO"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
