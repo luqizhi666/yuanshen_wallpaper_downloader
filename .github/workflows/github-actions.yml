@@ -18,14 +18,14 @@ jobs:  # 定义作业
     - name: Run python script find1.py and find2download.py
       run: |
             ls -l
-            python .find1.py
+            python find1.py
             cat src.txt
-            python .find2download.py
+            python find2download.py
             cat download.txt
             cat webimg.txt
             ls -l
     - name: Run python script calendar.py
       run: |
-        cd .日历壁纸\calender.py
+        cd .\日历壁纸\calender.py
         python calendar.py
         ls -l
