@@ -25,6 +25,7 @@ options.add_argument("--headless=new")
 # Linux 必需参数
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
+options.binary_location = "/usr/bin/microsoft-edge"
 
 # 方案1：使用隐私模式（推荐）
 options.add_argument("--inprivate")
