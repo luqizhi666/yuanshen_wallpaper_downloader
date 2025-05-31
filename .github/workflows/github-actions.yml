@@ -14,7 +14,7 @@ jobs:  # 定义作业
 
     - name: edgedriver
       run: |
-            wget https://msedgedriver.microsoft.com/137.0.3296.52/edgedriver_linux64.zip
+            wget https://msedgedriver.microsoft.com/136.0.3240.64/edgedriver_linux64.zip
 
             unzip edgedriver_linux64.zip
             chmod +x msedgedriver
