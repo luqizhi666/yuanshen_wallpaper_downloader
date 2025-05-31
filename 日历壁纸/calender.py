@@ -51,19 +51,27 @@ while True:
         break
 list= driver.find_elements(By.CLASS_NAME, "news__title")
 print(list)
+
+with open("downloaded.txt", "r") as file:
+    downloaded=file.readlines()
+
+
 for i in list:
     print(i.text)
     if "Calendar Wallpapers" in i.text :
         print(i.text)
         links.append(i.get_attribute("href"))
-print(links)
-a=0
+
+shoulddownload = [x for x in links if x not in downloaded]
+print('got:',links)
+print('should:',shoulddownload)
+
 for link in links:
     driver.get(link)
     time.sleep(1)
     imgs= driver.find_elements(By.CSS_SELECTOR, "img[style='border:none;vertical-align:middle;']")
     print(imgs)
-    a+=1
+    a = driver.title
     os.makedirs(os.path.join(os.getcwd(), f"{a}"), exist_ok=True)
     i=0
     for img in imgs:
@@ -72,3 +80,5 @@ for link in links:
         response = requests.get(img.get_attribute("src"))
         with open(os.path.join(os.getcwd() + "\\" + f"{a}", f"{i}.jpg"), "wb") as file:
             file.write(response.content)
+driver.quit()
+

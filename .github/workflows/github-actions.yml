@@ -39,6 +39,12 @@ jobs:  # 定义作业
             cat download.txt
             cat webimg.txt
             ls -l
+    
+    - name: unzip and remove zip file
+      run: |
+            python unzip.py
+            ls -l
+
 
     - name: Run python script calendar.py
       run: |
