@@ -17,6 +17,7 @@ jobs:  # 定义作业
     
     - name: Run python script find1.py and find2download.py
       run: |
+            pip install selenium numpy wget requests
             ls -l
             python find1.py
             cat src.txt
