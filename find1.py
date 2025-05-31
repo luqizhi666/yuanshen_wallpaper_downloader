@@ -6,6 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import sys
 import time
+from selenium.webdriver.edge.options import Options
+
 sys.stdout.reconfigure(encoding='utf-8') # 设置标准输出流的编码为utf-8
 
 
@@ -15,11 +17,10 @@ list = []
 options = webdriver.EdgeOptions()
 options.add_argument('lang=zh_CN.UTF-8') # 设置中文
 driver = webdriver.Edge(options=options)
+edge_options = Options()
 edge_options.add_argument("--headless")  # 启用无头模式
 
 
-temp_dir = tempfile.mkdtemp(prefix="edge_")
-# driver = webdriver.Chrome()
 
 driver.get("https://www.hoyolab.com/creatorCollection/526679?utm_source=hoyolab&utm_medium=tools&lang=zh-cn&bbs_theme=light&bbs_theme_device=1")
 

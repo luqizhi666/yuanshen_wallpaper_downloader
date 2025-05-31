@@ -15,16 +15,20 @@ jobs:  # 定义作业
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Run python script find1.py and find2download.py
+    - name: Run python script find1.py  
       run: |
             pip install selenium numpy wget requests
             ls -l
             python find1.py
             cat src.txt
+
+    - name: Run python script find2download.py
+      run: |
             python find2download.py
             cat download.txt
             cat webimg.txt
             ls -l
+            
     - name: Run python script calendar.py
       run: |
         cd .\日历壁纸\calender.py
