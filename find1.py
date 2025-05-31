@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import sys
 import time
 from selenium.webdriver.edge.options import Options
+import tempfile
 
 sys.stdout.reconfigure(encoding='utf-8') # 设置标准输出流的编码为utf-8
 
@@ -14,21 +15,24 @@ sys.stdout.reconfigure(encoding='utf-8') # 设置标准输出流的编码为utf-
 file = open("src.txt", "w", encoding="utf-8")
 list = []
 
-options = webdriver.EdgeOptions()
-options.add_argument('lang=zh_CN.UTF-8') # 设置中文
-driver = webdriver.Edge(options=options)
-edge_options = Options()
-    
-# 无头模式配置（新版语法）
-options.add_argument("--headless=new")
+# 临时 user data 目录，避免冲突
+temp_user_data_dir = tempfile.mkdtemp()
 
-# Linux 必需参数
+# 配置 Edge 启动选项
+options = Options()
+options.add_argument("--headless=new")  # 新版无头模式
+options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--lang=zh_CN.UTF-8")  # 设置中文语言
+options.add_argument("--inprivate")  # 隐私模式
+options.add_argument(f"--user-data-dir={temp_user_data_dir}")  # 指定唯一 user-data-dir
+
+# 设置 Edge 二进制路径（GitHub Actions 上必须）
 options.binary_location = "/usr/bin/microsoft-edge"
 
-# 方案1：使用隐私模式（推荐）
-options.add_argument("--inprivate")
+# 启动 driver
+driver = webdriver.Edge(options=options)
 
 driver.get("https://www.hoyolab.com/creatorCollection/526679?utm_source=hoyolab&utm_medium=tools&lang=zh-cn&bbs_theme=light&bbs_theme_device=1")
 
