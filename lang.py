@@ -24,7 +24,7 @@ wait = WebDriverWait(driver, 20)
 time.sleep(10)
 # 1. 尝试关闭登录弹窗
 try:
-    close_login_btn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "el-dialog__headerbtn")))
+    close_login_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[3]/div/div/button")))
     close_login_btn.click()
     print("已关闭登录弹窗")
 except:
@@ -33,7 +33,7 @@ except:
 # 2. 尝试点击“跳过”按钮
 try:
     skip_btn = wait.until(EC.element_to_be_clickable(
-        (By.CSS_SELECTOR, ".hyl-button.normal__quaternary.hyl-button__md.hyl-button-loading__md")
+        (By.XPATH, "/html/body/div[1]/div/div/div[3]/div/div/div/div[1]/button")
     ))
     skip_btn.click()
     print("已点击跳过按钮")
