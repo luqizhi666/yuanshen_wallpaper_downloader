@@ -24,7 +24,7 @@ options.add_argument("--headless=new")  # 新版无头模式
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--lang=zh_CN.UTF-8")  # 设置中文语言
+options.add_argument("--lang=zh_CN")  # 设置中文语言
 options.add_argument("--inprivate")  # 隐私模式
 options.add_argument(f"--user-data-dir={temp_user_data_dir}")  # 指定唯一 user-data-dir
 
