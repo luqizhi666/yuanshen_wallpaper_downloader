@@ -43,12 +43,19 @@ jobs:  # 定义作业
 
     - name: Commit files
       run: |
+        mv .gitignore .gitignore.bak
+        remove .gitignore
+        mv .gitignore_action .gitignore
         git config --local user.email "luqizhi666@gmail.com"
         git config --local user.name "github-actions[bot]"
-        git add -f .
         git commit -a -m "AUTO"
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
+    - name: recover .gitignore
+      run: |
+        mv .gitignore.bak .gitignore
+        ls -l
+        cat .gitignore

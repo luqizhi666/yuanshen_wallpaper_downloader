@@ -1,0 +1,6 @@
+
+*.zip
+.git
+
+*.db
+*.code-workspace
