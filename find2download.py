@@ -70,9 +70,15 @@ options.binary_location = "/usr/bin/microsoft-edge"
 
 driver = webdriver.Edge(options=options)
 
-
-
-
+# 设置全局 Accept-Language 请求头（CDP，需在 driver 初始化后立即设置）
+try:
+    driver.execute_cdp_cmd(
+        "Network.setExtraHTTPHeaders",
+        {"headers": {"Accept-Language": "zh-CN,zh;q=0.9"}}
+    )
+    driver.execute_cdp_cmd("Network.enable", {})
+except Exception as e:
+    print("全局设置Accept-Language失败", e)
 
 # wait = WebDriverWait(driver, 15)
 # def change_language():
@@ -134,7 +140,21 @@ driver = webdriver.Edge(options=options)
 
 
 for url in list:
+    # 再次设置请求头，确保每次新页面都生效
+    try:
+        driver.execute_cdp_cmd(
+            "Network.setExtraHTTPHeaders",
+            {"headers": {"Accept-Language": "zh-CN,zh;q=0.9"}}
+        )
+    except Exception as e:
+        print("设置Accept-Language失败", e)
     driver.get(url)
+    # 用 JS 强制切换页面语言（部分站点有效）
+    try:
+        driver.execute_script("document.documentElement.lang='zh-cn';")
+        driver.execute_script("navigator.__defineGetter__('language', function(){return 'zh-CN';});")
+    except Exception as e:
+        print("JS设置页面语言失败", e)
     time.sleep(np.random.randint(5, 6))
     for i in range(4):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")

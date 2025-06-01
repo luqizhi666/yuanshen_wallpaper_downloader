@@ -8,6 +8,11 @@ jobs:  # 定义作业
   build-job:  # 作业ID
     runs-on: ubuntu-latest  # 运行环境
     steps:
+    - name: Set LANG env for zh-CN
+      run: |
+        echo "LANG=zh_CN.UTF-8" >> $GITHUB_ENV
+        echo "LANGUAGE=zh_CN:zh" >> $GITHUB_ENV
+
     - uses: browser-actions/setup-edge@v1
     # - name: Print Edge version
     #   run: (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
