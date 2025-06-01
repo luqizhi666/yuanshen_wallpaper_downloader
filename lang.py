@@ -18,10 +18,10 @@ options.add_argument("--lang=zh_CN")
 options.add_argument("--inprivate")
 
 driver = webdriver.Edge(options=options)
-driver.get("https://www.hoyolab.com/creatorCollection/526679?utm_source=hoyolab&utm_medium=tools&lang=zh-cn&bbs_theme=light&bbs_theme_device=1")
+driver.get("https://www.hoyolab.com/article/39056688/")
 
-wait = WebDriverWait(driver, 15)
-
+wait = WebDriverWait(driver, 20)
+time.sleep(10)
 # 1. 尝试关闭登录弹窗
 try:
     close_login_btn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "el-dialog__headerbtn")))
