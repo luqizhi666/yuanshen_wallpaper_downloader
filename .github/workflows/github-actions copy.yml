@@ -53,8 +53,3 @@ jobs:  # 定义作业
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
-    - name: recover .gitignore
-      run: |
-        mv .gitignore.bak .gitignore
-        ls -l
-        cat .gitignore
