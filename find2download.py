@@ -135,6 +135,7 @@ with open("webimg.txt", "w", encoding="utf-8") as file:
         file.write(url + "\n")
 
 with open("failed.txt", "w", encoding="utf-8") as file:
+    print("下载失败的链接:", failed)
     for url in failed:
         file.write(url + "\n")
 
