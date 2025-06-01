@@ -44,7 +44,7 @@ jobs:  # 定义作业
     - name: Commit files
       run: |
         mv .gitignore .gitignore.bak
-        remove .gitignore
+        rm .gitignore
         mv .gitignore_action .gitignore
         git config --local user.email "luqizhi666@gmail.com"
         git config --local user.name "github-actions[bot]"
