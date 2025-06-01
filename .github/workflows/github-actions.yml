@@ -48,6 +48,8 @@ jobs:  # 定义作业
 
     - name: Run python script calendar.py
       run: |
+        pip install selenium numpy wget requests
+        ls -l
         cd ./日历壁纸
         python calendardownloader.py
         ls -l
@@ -61,7 +63,9 @@ jobs:  # 定义作业
 
     - name: Commit files
       run: |
-
+        git add .
+        git status
+        ls  -l
         git config --local user.email "luqizhi666@gmail.com"
         git config --local user.name "github-actions[bot]"
         git commit -a -m "AUTO"
