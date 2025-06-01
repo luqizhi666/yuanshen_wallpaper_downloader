@@ -1,70 +1,77 @@
+import requests
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.edge.options import Options
 import sys
 import time
 import os
-import numpy as np # 导入numpy库并简写为np
+import numpy as np
 import tempfile
-
-
 import re
+
+# 清理文件名
 def clean_filename(filename):
-    # 去除文件名中的无效字符
     filename = re.sub(r'[\\/*?:"<>|]', "", filename)
-    # 删除.png或.jpg后面的内容
     filename = re.sub(r'(\.png|\.jpg).*$', r'\1', filename)
     return filename
 
-import wget
+# 进度条
 def progress_bar(current, total, width=80):
     progress = current / total
     bar = '#' * int(progress * width)
     percentage = round(progress * 100, 2)
-    print(f'[{bar:<{width}}] {percentage}%')
+    print(f'\r[{bar:<{width}}] {percentage}%', end='')
 
+# 下载函数，带重试
+def download_with_retry(url, path, retries=3):
+    for attempt in range(retries):
+        try:
+            response = requests.get(url, stream=True, timeout=10)
+            response.raise_for_status()
+            total_length = int(response.headers.get('content-length', 0))
+            with open(path, 'wb') as f:
+                downloaded = 0
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        progress_bar(downloaded, total_length)
+            print(f'\nDownloaded: {url}')
+            return True
+        except Exception as e:
+            print(f'\nFailed attempt {attempt + 1} for {url}: {e}')
+            time.sleep(2)
+    return False
 
-sys.stdout.reconfigure(encoding='utf-8') # 设置标准输出流的编码为utf-8
+sys.stdout.reconfigure(encoding='utf-8')
 list = []
-file = open("shoulddownload.txt", "r", encoding="utf-8")
-lines = file.read().splitlines()
-for line in lines:
-    print(line)
-    list.append(line)
+with open("shoulddownload.txt", "r", encoding="utf-8") as file:
+    lines = file.read().splitlines()
+    for line in lines:
+        print(line)
+        list.append(line)
 print(list)
-file.close()
 
 download_url = []
 webimg = []
+failed = []
 
-
-# 临时 user data 目录，避免冲突
 temp_user_data_dir = tempfile.mkdtemp()
-
-# 配置 Edge 启动选项
 options = Options()
-options.add_argument("--headless=new")  # 新版无头模式
+options.add_argument("--headless=new")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--lang=zh_CN.UTF-8")  # 设置中文语言
-options.add_argument("--inprivate")  # 隐私模式
-options.add_argument(f"--user-data-dir={temp_user_data_dir}")  # 指定唯一 user-data-dir
-options.add_argument('lang=zh_CN.UTF-8') # 设置中文
-
-# 设置 Edge 二进制路径（GitHub Actions 上必须）
+options.add_argument("--lang=zh_CN.UTF-8")
+options.add_argument("--inprivate")
+options.add_argument(f"--user-data-dir={temp_user_data_dir}")
 options.binary_location = "/usr/bin/microsoft-edge"
 
-# 启动 driver
 driver = webdriver.Edge(options=options)
 for url in list:
     driver.get(url)
     time.sleep(np.random.randint(5, 6))
-    for i in range(4):    
+    for i in range(4):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(np.random.randint(3, 5))
     time.sleep(np.random.randint(3, 6))
@@ -74,55 +81,66 @@ for url in list:
         os.mkdir(title)
     elements = driver.find_elements(By.CLASS_NAME, "blot-link")
 
-    if not len(elements)== 0:
+    if elements:
         for element in elements:
-            print("元素href属性:", element.get_attribute("href"))
-            if len(element.get_attribute("href"))<=26:
-                download_url.append(element.get_attribute("href"))
-                base_name = element.get_attribute("href").split("/")[-1]
-                extract_path = os.path.join(title, base_name)  # 解压后的目录路径
-                if not os.path.exists(extract_path):
-                    zip_path = os.path.join(title, base_name + ".zip")
-                    wget.download(element.get_attribute("href"), out=zip_path, bar=progress_bar)
+            href = element.get_attribute("href")
+            print("元素href属性:", href)
+            if len(href) <= 26:
+                download_url.append(href)
+                base_name = href.split("/")[-1]
+                extract_path = os.path.join(title, base_name)
+                zip_path = os.path.join(title, base_name + ".zip")
+                if not os.path.exists(extract_path) and not os.path.exists(zip_path):
+                    success = download_with_retry(href, zip_path)
+                    if not success:
+                        failed.append(href)
                 else:
                     print("文件已存在")
             else:
                 print("未找到下载链接,开始查询页面图片")
                 imgelements = driver.find_elements(By.CLASS_NAME, "ql-image-mask-wrapper")
                 for img in imgelements:
-                    print(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
-                    webimg.append(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
-                    if not os.path.exists(title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1])):
-                        wget.download(img.find_element(By.TAG_NAME, "img").get_attribute("large"), out=title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1]), bar=progress_bar)
+                    src = img.find_element(By.TAG_NAME, "img").get_attribute("large")
+                    print(src)
+                    webimg.append(src)
+                    img_path = os.path.join(title, clean_filename(src.split("/")[-1]))
+                    if not os.path.exists(img_path):
+                        success = download_with_retry(src, img_path)
+                        if not success:
+                            failed.append(src)
                     else:
                         print("文件已存在")
-
-
     else:
         print("未找到任何链接,开始查询页面图片")
         imgelements = driver.find_elements(By.CLASS_NAME, "ql-image-mask-wrapper")
         for img in imgelements:
-            print(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
-            webimg.append(img.find_element(By.TAG_NAME, "img").get_attribute("large"))
-            if not os.path.exists(title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1])):
-                wget.download(img.find_element(By.TAG_NAME, "img").get_attribute("large"), out=title + "/" + clean_filename(img.find_element(By.TAG_NAME, "img").get_attribute("large").split("/")[-1]), bar=progress_bar)
+            src = img.find_element(By.TAG_NAME, "img").get_attribute("large")
+            print(src)
+            webimg.append(src)
+            img_path = os.path.join(title, clean_filename(src.split("/")[-1]))
+            if not os.path.exists(img_path):
+                success = download_with_retry(src, img_path)
+                if not success:
+                    failed.append(src)
             else:
                 print("文件已存在")
-        # time.sleep(np.random.randint(3, 6))
-        # driver.quit()
 
-
-
+# 保存数据
 with open("download.txt", "w", encoding="utf-8") as file:
     for url in download_url:
         file.write(url + "\n")
+
 with open("webimg.txt", "w", encoding="utf-8") as file:
     for url in webimg:
         file.write(url + "\n")
-with open("src.txt", "rw", encoding="utf-8") as file:
-    base = file.readlines()
-    alllinks = base + list
-    for url in alllinks:
+
+with open("failed.txt", "w", encoding="utf-8") as file:
+    for url in failed:
         file.write(url + "\n")
+
+with open("src.txt", "a", encoding="utf-8") as file:
+    for url in list:
+        file.write(url + "\n")
+
 with open("shoulddownload.txt", "w", encoding="utf-8") as file:
-        file.write("i'm finished!")  # 清空 shoulddownload.txt 文件内容
+    file.write("i'm finished!")
