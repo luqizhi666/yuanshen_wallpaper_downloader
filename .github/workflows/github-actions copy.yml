@@ -43,7 +43,8 @@ jobs:  # 定义作业
 
     - name: Commit files
       run: |
-        
+        mv .gitignore .gitignore2
+        cp .gitignore_action .gitignore
         ls  -l
         git config --local user.email "luqizhi666@gmail.com"
         git config --local user.name "github-actions[bot]"
@@ -53,3 +54,11 @@ jobs:  # 定义作业
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
+
+    - name: recover .gitignore
+      run: |
+        mv .gitignore2 .gitignore
+        ls -l
+        cat .gitignore
+        git add .gitignore
+        git commit -m "recover .gitignore"
