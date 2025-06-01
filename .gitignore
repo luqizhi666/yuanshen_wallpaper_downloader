@@ -5,3 +5,4 @@
 .git
 *.gif
 *.db
+*.code-workspace
