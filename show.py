@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import quote  # 新增
 
 def generate_html():
     base_dir = Path.cwd()
@@ -16,16 +17,18 @@ def generate_html():
         
         for file in files:
             if Path(file).suffix.lower() in image_exts:
-                img_path = rel_path / file
+                img_path = os.path.relpath(root_path / file, base_dir)
+                img_path = './' + img_path.replace('\\', '/')
                 if category not in categories:
                     categories[category] = []
-                categories[category].append(str(img_path).replace('\\', '/'))
+                categories[category].append(img_path)
 
     # 构建快速预览部分
     quick_preview_html = ''
     for cat in categories:
         for img in categories[cat][:5]:
-            quick_preview_html += f'<a href="#{cat}" class="scroll-item"><img src="{img}" alt="{Path(img).name}"></a>\n'
+            img_url = quote(img)  # 路径编码
+            quick_preview_html += f'<a href="#{cat}" class="scroll-item"><img src="{img_url}" alt="{Path(img).name}"></a>\n'
 
     # 构建分类展示部分
     category_sections_html = ''
@@ -36,11 +39,12 @@ def generate_html():
         <div class="grid-container">
 '''
         for img in imgs:
+            img_url = quote(img)  # 路径编码
             category_sections_html += f'''
             <div class="grid-item">
-                <img src="{img}" loading="lazy">
+                <img src="{img_url}" loading="lazy">
                 <div>
-                    <a href="{img}" download class="download-btn">下载高清版</a>
+                    <a href="{img_url}" download class="download-btn">下载高清版</a>
                 </div>
             </div>
 '''

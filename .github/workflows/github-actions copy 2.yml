@@ -1,0 +1,42 @@
+name: GO generate # 工作流名称
+
+on: 
+    schedule:
+        - cron: '0 0 * * *'  # 每天UTC午夜
+    workflow_dispatch:  # 手动触发工作流
+jobs:  # 定义作业
+  build-job:  # 作业ID
+    runs-on: ubuntu-latest  # 运行环境
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run python script calendar.py
+      run: |
+        pip install selenium numpy wget requests
+        ls -l
+        cd ./日历壁纸
+        python calendardownloader.py
+        ls -l
+    
+    - name: generate html
+      run: |
+        python show.py
+        ls -l
+
+
+
+    - name: Commit files
+      run: |
+        git add .
+        git status
+        ls  -l
+        git config --local user.email "luqizhi666@gmail.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -a -m "AUTO"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
