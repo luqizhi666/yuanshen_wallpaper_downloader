@@ -34,6 +34,16 @@ options.binary_location = "/usr/bin/microsoft-edge"
 # 启动 driver
 driver = webdriver.Edge(options=options)
 
+# 设置全局 Accept-Language 请求头（CDP）
+try:
+    driver.execute_cdp_cmd(
+        "Network.setExtraHTTPHeaders",
+        {"headers": {"Accept-Language": "zh-CN,zh;q=0.9"}}
+    )
+    driver.execute_cdp_cmd("Network.enable", {})
+except Exception as e:
+    print("全局设置Accept-Language失败", e)
+
 driver.get("https://www.hoyolab.com/creatorCollection/526679?utm_source=hoyolab&utm_medium=tools&lang=zh-cn&bbs_theme=light&bbs_theme_device=1")
 
 # time.sleep(20)
@@ -48,7 +58,7 @@ for i in range(10):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(3)
 
-
+print(driver.page_source[:4000])  # 打印部分页面源码，便于调试
 # driver.implicitly_wait(0.5)
 
 # ActionChains(driver)\
