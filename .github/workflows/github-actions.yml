@@ -33,6 +33,10 @@ jobs:  # 定义作业
             else
                 echo "Edge configuration file not found. Please ensure Edge is installed."
             fi
+            microsoft-edge --lang=zh-CN --no-sandbox &
+
+            export LANGUAGE=ZH-CN.UTF-8
+            echo “export LANGUAGE=ZH-CN.UTF-8” >> /usr/bin/microsoft-edge
 
             
 
