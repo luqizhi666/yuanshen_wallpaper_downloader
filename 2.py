@@ -1,0 +1,2 @@
+import wget
+wget.download("https://upload-os-bbs.hoyolab.com/upload/2022/12/28/cb31ff8cef716f492d72ea1f9fee3cb6_1546570224910616795.jpg?x-oss-process=image%2Fresize%2Cs_1000%2Fauto-orient%2C0%2Finterlace%2C1%2Fformat%2Cwebp%2Fquality%2Cq_70","./imgs")
