@@ -43,6 +43,7 @@ jobs:  # 定义作业
 
     - name: Commit files
       run: |
+        cd ..
         mv .gitignore .gitignore.bak
         rm .gitignore
         mv .gitignore_action .gitignore
