@@ -85,6 +85,7 @@ def change_language():
 
     # 2. 尝试点击“跳过”按钮
     try:
+        time.sleep(2)
         skip_btn = wait.until(EC.element_to_be_clickable(
             (By.CSS_SELECTOR, ".hyl-button.normal__quaternary.hyl-button__md.hyl-button-loading__md")
         ))
@@ -117,8 +118,7 @@ def change_language():
     except:
         print("找不到简体中文选项，可能已是中文或加载失败")
 
-    time.sleep(5)
-    driver.quit()
+
 
 
 
