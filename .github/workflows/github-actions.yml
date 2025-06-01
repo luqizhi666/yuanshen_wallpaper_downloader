@@ -49,7 +49,7 @@ jobs:  # 定义作业
     - name: Run python script calendar.py
       run: |
         cd ./日历壁纸
-        python calendar.py
+        python calendardownloader.py
         ls -l
     
     - name: generate html
