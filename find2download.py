@@ -74,49 +74,49 @@ driver = webdriver.Edge(options=options)
 
 
 
-wait = WebDriverWait(driver, 15)
-def change_language():
-    try:
-        close_login_btn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "el-dialog__headerbtn")))
-        close_login_btn.click()
-        print("已关闭登录弹窗")
-    except:
-        print("未检测到登录弹窗")
+# wait = WebDriverWait(driver, 15)
+# def change_language():
+#     try:
+#         close_login_btn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "el-dialog__headerbtn")))
+#         close_login_btn.click()
+#         print("已关闭登录弹窗")
+#     except:
+#         print("未检测到登录弹窗")
 
-    # 2. 尝试点击“跳过”按钮
-    try:
-        time.sleep(2)
-        skip_btn = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, ".hyl-button.normal__quaternary.hyl-button__md.hyl-button-loading__md")
-        ))
-        skip_btn.click()
-        print("已点击跳过按钮")
-    except:
-        print("未检测到跳过按钮")
+#     # 2. 尝试点击“跳过”按钮
+#     try:
+#         time.sleep(2)
+#         skip_btn = wait.until(EC.element_to_be_clickable(
+#             (By.CSS_SELECTOR, ".hyl-button.normal__quaternary.hyl-button__md.hyl-button-loading__md")
+#         ))
+#         skip_btn.click()
+#         print("已点击跳过按钮")
+#     except:
+#         print("未检测到跳过按钮")
 
-    # 3. 悬停头像区域
-    try:
-        avatar = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "header-avatar")))
-        ActionChains(driver).move_to_element(avatar).perform()
-        print("已悬停头像")
-    except:
-        print("找不到头像，可能未登录")
+#     # 3. 悬停头像区域
+#     try:
+#         avatar = wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "header-avatar")))
+#         ActionChains(driver).move_to_element(avatar).perform()
+#         print("已悬停头像")
+#     except:
+#         print("找不到头像，可能未登录")
 
-    # 4. 点击当前语言项
-    try:
-        lang_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "header-account-menu-item__val")))
-        lang_button.click()
-        print("点击语言菜单成功")
-    except:
-        print("语言菜单未找到")
+#     # 4. 点击当前语言项
+#     try:
+#         lang_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "header-account-menu-item__val")))
+#         lang_button.click()
+#         print("点击语言菜单成功")
+#     except:
+#         print("语言菜单未找到")
 
-    # 5. 选择简体中文
-    try:
-        lang_zhcn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "mhy-selectmenu__item--zh-cn")))
-        lang_zhcn.click()
-        print("已切换为简体中文")
-    except:
-        print("找不到简体中文选项，可能已是中文或加载失败")
+#     # 5. 选择简体中文
+#     try:
+#         lang_zhcn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "mhy-selectmenu__item--zh-cn")))
+#         lang_zhcn.click()
+#         print("已切换为简体中文")
+#     except:
+#         print("找不到简体中文选项，可能已是中文或加载失败")
 
 
 
@@ -140,7 +140,7 @@ for url in list:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(np.random.randint(3, 5))
     time.sleep(np.random.randint(3, 6))
-    change_language()
+    # change_language()
     title = driver.find_element(By.CLASS_NAME, "mhy-article-page__title").find_element(By.TAG_NAME, "h1").get_attribute('textContent')
     print(title)
     if not os.path.exists(title):
