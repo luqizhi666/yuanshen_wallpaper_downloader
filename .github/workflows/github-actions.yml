@@ -48,7 +48,7 @@ jobs:  # 定义作业
 
     - name: Run python script calendar.py
       run: |
-        cd .\日历壁纸\calender.py
+        cd ./日历壁纸
         python calendar.py
         ls -l
     
