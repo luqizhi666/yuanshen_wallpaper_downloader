@@ -54,7 +54,7 @@ jobs:  # 定义作业
     
     - name: Run python script find1.py  
       run: |
-            pip install selenium numpy wget requests
+            pip install selenium numpy wget requests pillow
             ls -l
             python find1.py
             cat src.txt
