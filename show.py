@@ -2,12 +2,17 @@ import os
 from pathlib import Path
 from urllib.parse import quote  # 新增
 from PIL import Image  # 新增
+import random  # 新增
+import shutil  # 新增
 
 def generate_html():
     base_dir = Path.cwd()
     image_exts = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'}
     
     categories = {}
+    all_pc_imgs = {}
+    all_mobile_imgs = {}
+
     for root, _, files in os.walk(base_dir):
         root_path = Path(root)
         if any(part.startswith('.') for part in root_path.parts):
@@ -23,6 +28,44 @@ def generate_html():
                 if category not in categories:
                     categories[category] = []
                 categories[category].append(img_path)
+
+    # --- 随机壁纸功能 ---
+    random_dir = Path(base_dir) / "random"
+    if not random_dir.exists():
+        random_dir.mkdir()
+    # 清空 random 目录
+    for f in random_dir.iterdir():
+        if f.is_file():
+            f.unlink()
+
+    # 收集所有分辨率的图片
+    pc_size_map = {}
+    mobile_size_map = {}
+    for cat, imgs in categories.items():
+        if cat == "根目录":
+            continue
+        for img in imgs:
+            img_path = img.lstrip('./')
+            try:
+                with Image.open(img_path) as im:
+                    w, h = im.size
+                    size_str = f"{w}x{h}"
+                    if w >= h:
+                        pc_size_map.setdefault(size_str, []).append(img_path)
+                    else:
+                        mobile_size_map.setdefault(size_str, []).append(img_path)
+            except Exception:
+                continue
+
+    # 随机复制每种分辨率的图片到 random 目录
+    for size, imglist in pc_size_map.items():
+        pick = random.choice(imglist)
+        ext = os.path.splitext(pick)[1]
+        shutil.copy(pick, random_dir / f"{size}{ext}")
+    for size, imglist in mobile_size_map.items():
+        pick = random.choice(imglist)
+        ext = os.path.splitext(pick)[1]
+        shutil.copy(pick, random_dir / f"{size}{ext}")
 
     # 构建快速预览部分
     quick_preview_html = ''
