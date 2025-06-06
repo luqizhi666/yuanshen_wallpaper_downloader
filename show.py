@@ -63,7 +63,7 @@ def generate_html():
             img_url = quote(img)
             category_sections_html += f'''
             <div class="grid-item">
-                <img src="{img_url}" loading="lazy">
+                <img data-src="{img_url}" alt="{Path(img).name}">
                 <div class="download-btn-wrap">
                     <a href="{img_url}" download class="download-btn" title="下载">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
@@ -82,7 +82,7 @@ def generate_html():
             img_url = quote(img)
             category_sections_html += f'''
             <div class="grid-item">
-                <img src="{img_url}" loading="lazy">
+                <img data-src="{img_url}" alt="{Path(img).name}">
                 <div class="download-btn-wrap">
                     <a href="{img_url}" download class="download-btn" title="下载">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
@@ -96,6 +96,14 @@ def generate_html():
         </div>
     </section>
 '''
+
+    # 构建侧边栏主题列表
+    sidebar_html = '<div class="sidebar"><div class="sidebar-title">分类主题</div><ul>'
+    for cat in categories:
+        if cat == "根目录":
+            continue
+        sidebar_html += f'<li><a href="#{cat}">{cat}</a></li>'
+    sidebar_html += '</ul></div>'
 
     # 组合完整 HTML 内容
     html_content = '''<!DOCTYPE html>
@@ -112,6 +120,48 @@ def generate_html():
             margin: 0;
             padding: 0;
         }
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 180px;
+            background: #f8fafc;
+            border-radius: 0 16px 16px 0;
+            box-shadow: 2px 0 12px rgba(76,175,80,0.07);
+            padding: 1.2em 0.7em 1.2em 1.2em;
+            z-index: 100;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .sidebar-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1em;
+            margin-bottom: 1em;
+            letter-spacing: 1px;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar li {
+            margin-bottom: 0.7em;
+        }
+        .sidebar a {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.05em;
+            border-left: 3px solid transparent;
+            padding-left: 0.5em;
+            transition: color 0.2s, border 0.2s;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            color: var(--secondary);
+            border-left: 3px solid var(--secondary);
+            background: #e3f0ff;
+            border-radius: 0 8px 8px 0;
+        }
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -119,6 +169,7 @@ def generate_html():
             border-radius: 18px;
             box-shadow: 0 4px 24px rgba(0,0,0,0.07);
             padding: 2rem 1rem 2rem 1rem;
+            margin-left: 200px;
         }
         .gallery-section { margin: 2rem 0; }
         h1 {
@@ -198,6 +249,12 @@ def generate_html():
             margin-bottom: 0.5rem;
             transition: box-shadow 0.3s;
             background: #f0f2f5;
+            /* 懒加载时可加淡入动画 */
+            opacity: 0;
+            transition: opacity 0.4s, box-shadow 0.3s;
+        }
+        .grid-item img.loaded {
+            opacity: 1;
         }
         .grid-item:hover {
             box-shadow: 0 4px 16px rgba(76,175,80,0.13);
@@ -306,6 +363,7 @@ def generate_html():
     </style>
 </head>
 <body>
+    ''' + sidebar_html + '''
     <div class="main-container">
     <h1 style="text-align: center;">
         <img src="venti.png" alt="Venti" style="height:2.2em;vertical-align:middle;margin-right:0.5em;">
@@ -339,6 +397,50 @@ def generate_html():
     ''' + category_sections_html + '''
     </div>
     <script>
+    // 侧边栏高亮当前分类
+    document.addEventListener("DOMContentLoaded", function() {
+        var sidebarLinks = document.querySelectorAll('.sidebar a');
+        function highlightSidebar() {
+            var scrollPos = window.scrollY || window.pageYOffset;
+            var sections = document.querySelectorAll('.gallery-section[id]');
+            var currentId = "";
+            for (var i = 0; i < sections.length; i++) {
+                var sec = sections[i];
+                if (sec.offsetTop - 80 <= scrollPos) {
+                    currentId = sec.id;
+                }
+            }
+            sidebarLinks.forEach(function(link) {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + currentId);
+            });
+        }
+        window.addEventListener('scroll', highlightSidebar);
+        highlightSidebar();
+    });
+    // 懒加载实现
+    document.addEventListener("DOMContentLoaded", function() {
+        if ('IntersectionObserver' in window) {
+            var imgs = document.querySelectorAll('.grid-item img[data-src]');
+            var observer = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var img = entry.target;
+                        img.src = img.getAttribute('data-src');
+                        img.onload = function() { img.classList.add('loaded'); };
+                        observer.unobserve(img);
+                    }
+                });
+            }, { rootMargin: "100px" });
+            imgs.forEach(function(img) { observer.observe(img); });
+        } else {
+            // 不支持IntersectionObserver时直接加载
+            var imgs = document.querySelectorAll('.grid-item img[data-src]');
+            imgs.forEach(function(img) {
+                img.src = img.getAttribute('data-src');
+                img.onload = function() { img.classList.add('loaded'); };
+            });
+        }
+    });
     var sizeFilter = 'all';
     var resolutionFilter = 'all';
     document.getElementById('resolutionSelect').addEventListener('change', function() {
