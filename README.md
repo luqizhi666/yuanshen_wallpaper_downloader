@@ -7,8 +7,14 @@
 环境：
 
 ```
-pip install selenium numpy wget
+pip install selenium numpy wget requests pillow
 ```
+
+# 依赖说明
+- selenium：网页自动化
+- numpy：随机等待等辅助
+- wget、requests：图片和文件下载
+- pillow：图片分辨率判断与处理（用于网页展示和随机壁纸功能）
 
 先运行find.py,在运行find2download.py
 
