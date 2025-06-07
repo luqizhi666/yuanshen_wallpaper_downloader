@@ -1,8 +1,8 @@
 name: GO generate # 工作流名称
 
 on: 
-    # schedule:
-    #     - cron: '0 0 * * *'  # 每天UTC午夜
+    schedule:
+       - cron: '0 */6 * * *'  # 每6小时UTC执行一次
     workflow_dispatch:  # 手动触发工作流
 jobs:  # 定义作业
   build-job:  # 作业ID
@@ -11,13 +11,10 @@ jobs:  # 定义作业
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Run python script calendar.py
+    - name: 环境
       run: |
-        pip install selenium numpy wget requests
-        ls -l
-        cd ./日历壁纸
-        python calendardownloader.py
-        ls -l
+        pip install selenium numpy wget requests pillow 
+
     
     - name: generate html
       run: |
