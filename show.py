@@ -50,22 +50,27 @@ def generate_html():
                 with Image.open(img_path) as im:
                     w, h = im.size
                     size_str = f"{w}x{h}"
+                    # 只统计真实存在的图片，且避免重复
                     if w >= h:
-                        pc_size_map.setdefault(size_str, []).append(img_path)
+                        pc_size_map.setdefault(size_str, set()).add(img_path)
                     else:
-                        mobile_size_map.setdefault(size_str, []).append(img_path)
+                        mobile_size_map.setdefault(size_str, set()).add(img_path)
             except Exception:
                 continue
 
     # 随机复制每种分辨率的图片到 random 目录
-    for size, imglist in pc_size_map.items():
-        pick = random.choice(imglist)
-        ext = os.path.splitext(pick)[1]
-        shutil.copy(pick, random_dir / f"{size}{ext}")
-    for size, imglist in mobile_size_map.items():
-        pick = random.choice(imglist)
-        ext = os.path.splitext(pick)[1]
-        shutil.copy(pick, random_dir / f"{size}{ext}")
+    for size, imgset in pc_size_map.items():
+        imglist = list(imgset)
+        if imglist:
+            pick = random.choice(imglist)
+            ext = os.path.splitext(pick)[1]
+            shutil.copy(pick, random_dir / f"{size}{ext}")
+    for size, imgset in mobile_size_map.items():
+        imglist = list(imgset)
+        if imglist:
+            pick = random.choice(imglist)
+            ext = os.path.splitext(pick)[1]
+            shutil.copy(pick, random_dir / f"{size}{ext}")
 
     # 构建快速预览部分
     quick_preview_html = ''
@@ -141,33 +146,46 @@ def generate_html():
 '''
 
     # 构建侧边栏主题列表
-    sidebar_html = '<div class="sidebar"><div class="sidebar-title">分类主题</div><ul>'
+    sidebar_html = '''
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-title">
+            分类主题
+            <button id="sidebar-toggle" title="隐藏/显示侧边栏" style="float:right;background:none;border:none;cursor:pointer;font-size:1.2em;color:#4CAF50;">⮜</button>
+        </div>
+        <ul>
+    '''
     for cat in categories:
         if cat == "根目录":
             continue
         sidebar_html += f'<li><a href="#{cat}">{cat}</a></li>'
     sidebar_html += '</ul></div>'
 
+    max_cat_len = max((len(cat) for cat in categories if cat != "根目录"), default=4)
+    # 估算宽度：每个汉字约16px，英文约9px，取最大长度，+80px留空
+    sidebar_width = min(max(80 + max_cat_len * 18, 180), 420)  # 180~420px自适应
+
     # 组合完整 HTML 内容
-    html_content = '''<!DOCTYPE html>
+    html_content = f'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <title>原神壁纸库</title>
     <link rel="icon" type="image/png" href="venti.png">
     <style>
-        :root { --scroll-speed: 30s; --primary: #4CAF50; --secondary: #ff6b6b; }
-        body {
+        :root {{ --scroll-speed: 30s; --primary: #4CAF50; --secondary: #ff6b6b; }}
+        body {{
             font-family: "Microsoft Yahei", "Segoe UI", Arial, sans-serif;
             background: linear-gradient(135deg, #f0f2f5 0%, #e3f0ff 100%);
             margin: 0;
             padding: 0;
-        }
-        .sidebar {
+        }}
+        .sidebar {{
             position: fixed;
             top: 80px;
             left: 0;
-            width: 180px;
+            width: {sidebar_width}px;
+            min-width: 120px;
+            max-width: 420px;
             background: #f8fafc;
             border-radius: 0 16px 16px 0;
             box-shadow: 2px 0 12px rgba(76,175,80,0.07);
@@ -175,47 +193,65 @@ def generate_html():
             z-index: 100;
             max-height: 80vh;
             overflow-y: auto;
-        }
-        .sidebar-title {
+            transition: left 0.3s, box-shadow 0.3s, width 0.3s;
+        }}
+        .sidebar.hide {{
+            left: -{sidebar_width - 50}px;
+            box-shadow: none;
+        }}
+        .sidebar-title {{
             font-weight: bold;
             color: var(--primary);
             font-size: 1.1em;
             margin-bottom: 1em;
             letter-spacing: 1px;
-        }
-        .sidebar ul {
+            user-select: none;
+        }}
+        .sidebar ul {{
             list-style: none;
             padding: 0;
             margin: 0;
-        }
-        .sidebar li {
+        }}
+        .sidebar li {{
             margin-bottom: 0.7em;
-        }
-        .sidebar a {
+            word-break: break-all;
+        }}
+        .sidebar a {{
             color: #333;
             text-decoration: none;
             font-size: 1.05em;
             border-left: 3px solid transparent;
             padding-left: 0.5em;
             transition: color 0.2s, border 0.2s;
-        }
-        .sidebar a:hover, .sidebar a.active {
+        }}
+        .sidebar a:hover, .sidebar a.active {{
             color: var(--secondary);
             border-left: 3px solid var(--secondary);
             background: #e3f0ff;
             border-radius: 0 8px 8px 0;
-        }
-        .main-container {
+        }}
+        .sidebar #sidebar-toggle {{
+            margin-left: 10px;
+        }}
+        @media (max-width: 900px) {{
+            .sidebar {{ display: none; }}
+            .main-container {{ margin-left: 0 !important; }}
+        }}
+        .main-container {{
             max-width: 1200px;
             margin: 0 auto;
             background: #fff;
             border-radius: 18px;
             box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 2rem 1rem 2rem 1rem;
-            margin-left: 200px;
-        }
-        .gallery-section { margin: 2rem 0; }
-        h1 {
+            padding: 0.5rem;
+            margin-left: {sidebar_width + 20}px;
+            transition: margin-left 0.3s;
+        }}
+        .sidebar.hide ~ .main-container {{
+            margin-left: 60px;
+        }}
+        .gallery-section {{ margin: 2rem 0; }}
+        h1 {{
             color: #222;
             font-size: 2.3em;
             letter-spacing: 2px;
@@ -223,8 +259,8 @@ def generate_html():
             margin-bottom: 1.5rem;
             font-weight: 700;
             text-shadow: 0 2px 8px rgba(76,175,80,0.08);
-        }
-        h2 {
+        }}
+        h2 {{
             color: #1a1a1a;
             border-left: 4px solid var(--secondary);
             padding-left: 1rem;
@@ -232,16 +268,16 @@ def generate_html():
             margin-bottom: 1.2rem;
             margin-top: 2.2rem;
             font-weight: 600;
-        }
-        .grid-container-title {
+        }}
+        .grid-container-title {{
             font-size: 1.08em;
             color: var(--primary);
             margin: 0.5em 0 0.2em 0.5em;
             font-weight: bold;
             letter-spacing: 1px;
-        }
-        .hidden-title { display: none !important; }
-        .scroll-container {
+        }}
+        .hidden-title {{ display: none !important; }}
+        .scroll-container {{
             overflow-x: auto;
             white-space: nowrap;
             padding: 1rem 0;
@@ -250,25 +286,25 @@ def generate_html():
             background: #f8fafc;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(76,175,80,0.04);
-        }
-        .scroll-item {
+        }}
+        .scroll-item {{
             display: inline-block;
             margin-right: 1rem;
             transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .scroll-item:hover {
+        }}
+        .scroll-item:hover {{
             transform: scale(1.07);
             box-shadow: 0 4px 16px rgba(76,175,80,0.15);
-        }
-        .scroll-item img {
+        }}
+        .scroll-item img {{
             height: 180px;
             width: auto;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             border: 2px solid #e3f0ff;
             background: #fff;
-        }
-        .grid-container {
+        }}
+        .grid-container {{
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 1.2rem;
@@ -276,41 +312,40 @@ def generate_html():
             background: #f8fafc;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(76,175,80,0.04);
-        }
-        .grid-item {
+        }}
+        .grid-item {{
             text-align: center;
             position: relative;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             transition: box-shadow 0.3s;
-        }
-        .grid-item img {
+        }}
+        .grid-item img {{
             width: 100%;
             height: auto;
             border-radius: 8px;
             margin-bottom: 0.5rem;
             transition: box-shadow 0.3s;
             background: #f0f2f5;
-            /* 懒加载时可加淡入动画 */
             opacity: 0;
             transition: opacity 0.4s, box-shadow 0.3s;
-        }
-        .grid-item img.loaded {
+        }}
+        .grid-item img.loaded {{
             opacity: 1;
-        }
-        .grid-item:hover {
+        }}
+        .grid-item:hover {{
             box-shadow: 0 4px 16px rgba(76,175,80,0.13);
-        }
-        .download-btn-wrap {
+        }}
+        .download-btn-wrap {{
             position: absolute;
             top: 10px;
             right: 10px;
             opacity: 1;
             pointer-events: auto;
             z-index: 2;
-        }
-        .download-btn {
+        }}
+        .download-btn {{
             display: inline-block;
             padding: 0.5rem;
             background: var(--primary);
@@ -320,31 +355,31 @@ def generate_html():
             color: white !important;
             box-shadow: 0 2px 8px rgba(76,175,80,0.15);
             border: none;
-        }
-        .download-btn:hover {
+        }}
+        .download-btn:hover {{
             background: var(--secondary);
             box-shadow: 0 4px 16px rgba(255,107,107,0.18);
-        }
-        .download-btn::after { content: ""; }
+        }}
+        .download-btn::after {{ content: ""; }}
         /* 手机适配 */
-        @media (max-width: 600px) {
-            .main-container { padding: 0.5rem; }
-            .scroll-item img { height: 100px; }
-            .grid-container {
+        @media (max-width: 600px) {{
+            .main-container {{ padding: 0.5rem; }}
+            .scroll-item img {{ height: 100px; }}
+            .grid-container {{
                 grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
                 gap: 0.5rem;
                 padding: 0.5rem;
-            }
-            .grid-item img { margin-bottom: 0.2rem; }
-            .download-btn-wrap { top: 4px; right: 4px; }
-            .download-btn { padding: 0.3rem; }
-        }
-        .search-bar {
+            }}
+            .grid-item img {{ margin-bottom: 0.2rem; }}
+            .download-btn-wrap {{ top: 4px; right: 4px; }}
+            .download-btn {{ padding: 0.3rem; }}
+        }}
+        .search-bar {{
             display: flex;
             justify-content: center;
             margin: 2rem 0 1rem 0;
-        }
-        .search-bar input {
+        }}
+        .search-bar input {{
             width: 350px;
             font-size: 1.1em;
             padding: 0.5em 1em;
@@ -353,24 +388,24 @@ def generate_html():
             outline: none;
             transition: border 0.3s, box-shadow 0.3s;
             background: #f8fafc;
-        }
-        .search-bar input:focus {
+        }}
+        .search-bar input:focus {{
             border: 1.5px solid var(--secondary);
             box-shadow: 0 2px 8px rgba(255,107,107,0.08);
-        }
-        .highlight {
+        }}
+        .highlight {{
             outline: 2px solid var(--secondary);
             outline-offset: 2px;
-        }
-        .hidden-section { display: none !important; }
-        .hidden-img { display: none !important; }
-        .filter-bar {
+        }}
+        .hidden-section {{ display: none !important; }}
+        .hidden-img {{ display: none !important; }}
+        .filter-bar {{
             display: flex;
             justify-content: center;
             gap: 1rem;
             margin-bottom: 1rem;
-        }
-        .filter-btn {
+        }}
+        .filter-btn {{
             padding: 0.4em 1.2em;
             border-radius: 20px;
             border: 1.5px solid var(--primary);
@@ -379,13 +414,13 @@ def generate_html():
             font-size: 1em;
             cursor: pointer;
             transition: background 0.2s, color 0.2s, border 0.2s;
-        }
-        .filter-btn.active, .filter-btn:hover {
+        }}
+        .filter-btn.active, .filter-btn:hover {{
             background: var(--primary);
             color: #fff;
             border: 1.5px solid var(--secondary);
-        }
-        #resolutionSelect {
+        }}
+        #resolutionSelect {{
             margin-left:1em;
             padding:0.4em 1em;
             border-radius:20px;
@@ -395,19 +430,19 @@ def generate_html():
             color: var(--primary);  /* 绿色字体 */
             outline: none;
             transition: border 0.2s;
-        }
-        #resolutionSelect:focus {
+        }}
+        #resolutionSelect:focus {{
             border:1.5px solid var(--secondary);
-        }
-        #resolutionSelect option {
+        }}
+        #resolutionSelect option {{
             color: var(--primary);  /* 绿色字体 */
             background: #fff;
-        }
+        }}
     </style>
 </head>
 <body>
     ''' + sidebar_html + '''
-    <div class="main-container">
+    <div class="main-container" id="main-container">
     <h1 style="text-align: center;">
         <img src="venti.png" alt="Venti" style="height:2.2em;vertical-align:middle;margin-right:0.5em;">
         原神活动壁纸合集
@@ -459,6 +494,24 @@ def generate_html():
         }
         window.addEventListener('scroll', highlightSidebar);
         highlightSidebar();
+
+        // 侧边栏隐藏/显示
+        var sidebar = document.getElementById('sidebar');
+        var mainContainer = document.getElementById('main-container');
+        var toggleBtn = document.getElementById('sidebar-toggle');
+        var hide = false;
+        toggleBtn.onclick = function() {
+            hide = !hide;
+            if (hide) {
+                sidebar.classList.add('hide');
+                mainContainer.style.marginLeft = '60px';
+                toggleBtn.innerText = '⮞';
+            } else {
+                sidebar.classList.remove('hide');
+                mainContainer.style.marginLeft = '290px';
+                toggleBtn.innerText = '⮜';
+            }
+        };
     });
     // 懒加载实现
     document.addEventListener("DOMContentLoaded", function() {

@@ -16,7 +16,9 @@
             position: fixed;
             top: 80px;
             left: 0;
-            width: 180px;
+            width: 188px;
+            min-width: 120px;
+            max-width: 420px;
             background: #f8fafc;
             border-radius: 0 16px 16px 0;
             box-shadow: 2px 0 12px rgba(76,175,80,0.07);
@@ -24,6 +26,11 @@
             z-index: 100;
             max-height: 80vh;
             overflow-y: auto;
+            transition: left 0.3s, box-shadow 0.3s, width 0.3s;
+        }
+        .sidebar.hide {
+            left: -138px;
+            box-shadow: none;
         }
         .sidebar-title {
             font-weight: bold;
@@ -31,6 +38,7 @@
             font-size: 1.1em;
             margin-bottom: 1em;
             letter-spacing: 1px;
+            user-select: none;
         }
         .sidebar ul {
             list-style: none;
@@ -39,6 +47,7 @@
         }
         .sidebar li {
             margin-bottom: 0.7em;
+            word-break: break-all;
         }
         .sidebar a {
             color: #333;
@@ -54,14 +63,25 @@
             background: #e3f0ff;
             border-radius: 0 8px 8px 0;
         }
+        .sidebar #sidebar-toggle {
+            margin-left: 10px;
+        }
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main-container { margin-left: 0 !important; }
+        }
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
             background: #fff;
             border-radius: 18px;
             box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 2rem 1rem 2rem 1rem;
-            margin-left: 200px;
+            padding: 0.5rem;
+            margin-left: 208px;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.hide ~ .main-container {
+            margin-left: 60px;
         }
         .gallery-section { margin: 2rem 0; }
         h1 {
@@ -141,7 +161,6 @@
             margin-bottom: 0.5rem;
             transition: box-shadow 0.3s;
             background: #f0f2f5;
-            /* 懒加载时可加淡入动画 */
             opacity: 0;
             transition: opacity 0.4s, box-shadow 0.3s;
         }
@@ -255,8 +274,15 @@
     </style>
 </head>
 <body>
-    <div class="sidebar"><div class="sidebar-title">分类主题</div><ul><li><a href="#日历壁纸">日历壁纸</a></li></ul></div>
-    <div class="main-container">
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-title">
+            分类主题
+            <button id="sidebar-toggle" title="隐藏/显示侧边栏" style="float:right;background:none;border:none;cursor:pointer;font-size:1.2em;color:#4CAF50;">⮜</button>
+        </div>
+        <ul>
+    <li><a href="#random">random</a></li><li><a href="#日历壁纸">日历壁纸</a></li></ul></div>
+    <div class="main-container" id="main-container">
     <h1 style="text-align: center;">
         <img src="venti.png" alt="Venti" style="height:2.2em;vertical-align:middle;margin-right:0.5em;">
         原神活动壁纸合集
@@ -282,7 +308,11 @@
     <section class="gallery-section">
         <h2>快速浏览</h2>
         <div class="scroll-container" id="scrollContainer">
-            <a href="#日历壁纸" class="scroll-item"><img src="./%E6%97%A5%E5%8E%86%E5%A3%81%E7%BA%B8/Genshin%20Impact%20April%20Calendar%20Wallpapers/1.jpg" alt="1.jpg"></a>
+            <a href="#random" class="scroll-item"><img src="./random/1440x2560.jpg" alt="1440x2560.jpg"></a>
+<a href="#random" class="scroll-item"><img src="./random/2560x1440.jpg" alt="2560x1440.jpg"></a>
+<a href="#random" class="scroll-item"><img src="./random/690x320.jpg" alt="690x320.jpg"></a>
+<a href="#random" class="scroll-item"><img src="./random/736x896.jpg" alt="736x896.jpg"></a>
+<a href="#日历壁纸" class="scroll-item"><img src="./%E6%97%A5%E5%8E%86%E5%A3%81%E7%BA%B8/Genshin%20Impact%20April%20Calendar%20Wallpapers/1.jpg" alt="1.jpg"></a>
 <a href="#日历壁纸" class="scroll-item"><img src="./%E6%97%A5%E5%8E%86%E5%A3%81%E7%BA%B8/Genshin%20Impact%20April%20Calendar%20Wallpapers/2.jpg" alt="2.jpg"></a>
 <a href="#日历壁纸" class="scroll-item"><img src="./%E6%97%A5%E5%8E%86%E5%A3%81%E7%BA%B8/Genshin%20Impact%20April%20Calendar%20Wallpapers/3.jpg" alt="3.jpg"></a>
 <a href="#日历壁纸" class="scroll-item"><img src="./%E6%97%A5%E5%8E%86%E5%A3%81%E7%BA%B8/Genshin%20Impact%20April%20Calendar%20Wallpapers/4.jpg" alt="4.jpg"></a>
@@ -292,6 +322,62 @@
     </section>
     <!-- 分类总览 -->
     
+    <section class="gallery-section" id="random">
+        <h2>random</h2>
+        <div class="grid-container-title pc-title">电脑壁纸</div>
+        <div class="grid-container pc-container">
+
+            <div class="grid-item">
+                <img data-src="./random/2560x1440.jpg" alt="2560x1440.jpg">
+                <div class="download-btn-wrap">
+                    <a href="./random/2560x1440.jpg" download class="download-btn" title="下载">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+                            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <img data-src="./random/690x320.jpg" alt="690x320.jpg">
+                <div class="download-btn-wrap">
+                    <a href="./random/690x320.jpg" download class="download-btn" title="下载">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+                            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        <div class="grid-container-title mobile-title">手机壁纸</div>
+        <div class="grid-container mobile-container">
+
+            <div class="grid-item">
+                <img data-src="./random/1440x2560.jpg" alt="1440x2560.jpg">
+                <div class="download-btn-wrap">
+                    <a href="./random/1440x2560.jpg" download class="download-btn" title="下载">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+                            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid-item">
+                <img data-src="./random/736x896.jpg" alt="736x896.jpg">
+                <div class="download-btn-wrap">
+                    <a href="./random/736x896.jpg" download class="download-btn" title="下载">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;">
+                            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
     <section class="gallery-section" id="日历壁纸">
         <h2>日历壁纸</h2>
         <div class="grid-container-title pc-title">电脑壁纸</div>
@@ -556,6 +642,24 @@
         }
         window.addEventListener('scroll', highlightSidebar);
         highlightSidebar();
+
+        // 侧边栏隐藏/显示
+        var sidebar = document.getElementById('sidebar');
+        var mainContainer = document.getElementById('main-container');
+        var toggleBtn = document.getElementById('sidebar-toggle');
+        var hide = false;
+        toggleBtn.onclick = function() {
+            hide = !hide;
+            if (hide) {
+                sidebar.classList.add('hide');
+                mainContainer.style.marginLeft = '60px';
+                toggleBtn.innerText = '⮞';
+            } else {
+                sidebar.classList.remove('hide');
+                mainContainer.style.marginLeft = '290px';
+                toggleBtn.innerText = '⮜';
+            }
+        };
     });
     // 懒加载实现
     document.addEventListener("DOMContentLoaded", function() {
