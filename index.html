@@ -271,7 +271,48 @@
             color: var(--primary);  /* 绿色字体 */
             background: #fff;
         }
+        /* 强制APlayer字体颜色为深色，防止透明或白色 */
+        .aplayer, .aplayer * {
+            color: #222 !important;
+            font-family: "Microsoft Yahei", "Segoe UI", Arial, sans-serif !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+        .aplayer .aplayer-lrc p {
+            color: #222 !important;
+            opacity: 1 !important;
+        }
+        .aplayer-info {
+            display: block !important;
+        }
+        .aplayer-title, .aplayer-author, .aplayer-ptime, .aplayer-dtime, .aplayer-lrc, .aplayer-list-title, .aplayer-list-author {
+            color: #222 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+        /* 若有透明背景，强制白色背景 */
+        .aplayer {
+            background: #fff !important;
+        }
+        .aplayer-notice {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            min-width: 0 !important;
+            max-height: 0 !important;
+            max-width: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            background: none !important;
+        }
     </style>
+    <!-- MetingJS & APlayer -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
 </head>
 <body>
     
@@ -287,6 +328,38 @@
         <img src="venti.png" alt="Venti" style="height:2.2em;vertical-align:middle;margin-right:0.5em;">
         原神活动壁纸合集
     </h1>
+    <!-- 网易云歌单播放器 -->
+    <div id="aplayer-wrap" style="max-width:420px;margin:0 auto 1.5em auto;display:block !important;">
+        <meting-js
+            server="netease"
+            type="playlist"
+            id="13812854633"
+            fixed="true"
+            mini="false"
+            order="random"
+            preload="auto"
+            theme="#4CAF50"
+            loop="all"
+            list-max-height="320px"
+            volume="0.7"
+            lrc-type="1"
+            list-folded="false"
+            mutex="true"
+            autoplay="false"
+            style="display:block !important;">
+        </meting-js>
+    </div>
+    <script>
+    // 强制显示APlayer和MetingJS组件
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var ap = document.querySelector('.aplayer');
+            if (ap) ap.style.display = 'block';
+            var meting = document.querySelector('meting-js');
+            if (meting) meting.style.display = 'block';
+        }, 800);
+    });
+    </script>
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="🔍 搜索图片文件名或分类..." oninput="searchImages()">
     </div>
