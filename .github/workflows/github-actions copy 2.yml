@@ -2,7 +2,7 @@ name: GO generate # 工作流名称
 
 on: 
     schedule:
-       - cron: '0 */6 * * *'  # 每6小时UTC执行一次
+       - cron: '* * * 15,30 * ? *'  # 每6小时UTC执行一次
     workflow_dispatch:  # 手动触发工作流
 jobs:  # 定义作业
   build-job:  # 作业ID
