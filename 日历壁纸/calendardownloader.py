@@ -43,21 +43,23 @@ driver = webdriver.Edge(options=options)
 driver.get("https://genshin.hoyoverse.com/en/news/398")
 
 # 自动点击“加载更多”
-for i in range(10):
-    while True:
-        try:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(1)
-            more_button = driver.find_element(By.CLASS_NAME, "news__more")
-            more_button.click()
-            print("Loading more news...")
-            time.sleep(3)
-        except:
-            print("All news loaded.")
-            break
+title_elements = []
+last_src="https://genshin.hoyoverse.com/en/news/detail/127786"
+while not(last_src in title_elements):
+    try:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(1)
+        more_button = driver.find_element(By.CLASS_NAME, "news__more")
+        more_button.click()
+        print("Loading more news...")
+        # 获取标题列表
+        title_elements = driver.find_elements(By.CLASS_NAME, "news__title")
+        time.sleep(3)
+    except:
+        print("点击加载失败")
+            
 
-# 获取标题列表
-title_elements = driver.find_elements(By.CLASS_NAME, "news__title")
+
 
 # 已下载的链接
 downloaded = []
@@ -94,13 +96,11 @@ for link in should_download:
     title = driver.title
     folder_name = re.sub(r'[\\/*?:"<>|]', "_", title)
     folder_path = os.path.join(os.getcwd(), folder_name)
-    
-    if os.path.isdir(folder_path):
-        print("文件夹存在")
-        folder_path = folder_path + str(current_year)
-    else:
-        print("未存在")
-        folder_path = folder_path + "2025"
+    print(folder_path)
+    while not(os.path.isdir(folder_path)):
+        folder_path = folder_path + " " + str(current_year - 1)
+        print("减去1")
+    print("在" + folder_path)
     os.makedirs(folder_path, exist_ok=True)
     # 下载图片
     for idx, img in enumerate(imgs, 1):
