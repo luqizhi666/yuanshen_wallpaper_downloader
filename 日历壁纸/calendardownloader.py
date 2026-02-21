@@ -45,7 +45,7 @@ driver.get("https://genshin.hoyoverse.com/en/news/398")
 # 自动点击“加载更多”
 title_elements = []
 last_src="https://genshin.hoyoverse.com/en/news/detail/127786"
-while not(last_src in title_elements):
+while not(last_src in links):
     try:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(1)
@@ -54,7 +54,14 @@ while not(last_src in title_elements):
         print("Loading more news...")
         # 获取标题列表
         title_elements = driver.find_elements(By.CLASS_NAME, "news__title")
-        print(title_elements)
+        
+        for el in title_elements:
+            if "Calendar Wallpapers" in el.text:
+                href = el.get_attribute("href")
+                if href and href not in links:
+                    links.append(href)
+        
+        print(links)
         time.sleep(3)
     except:
         print("点击加载失败")
