@@ -182,6 +182,7 @@ for url in list:
                         failed.append(href)
                 else:
                     print("文件已存在")
+                    break
             else:
                 print("未找到下载链接,开始查询页面图片")
                 imgelements = driver.find_elements(By.CLASS_NAME, "ql-image-mask-wrapper")
@@ -196,6 +197,7 @@ for url in list:
                             failed.append(src)
                     else:
                         print("文件已存在")
+                        break
     else:
         print("未找到任何链接,开始查询页面图片")
         imgelements = driver.find_elements(By.CLASS_NAME, "ql-image-mask-wrapper")
@@ -210,6 +212,7 @@ for url in list:
                     failed.append(src)
             else:
                 print("文件已存在")
+                break
 
 # 保存数据
 with open("download.txt", "w", encoding="utf-8") as file:
