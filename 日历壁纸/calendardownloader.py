@@ -96,7 +96,7 @@ for link in should_download:
     os.makedirs(folder_path, exist_ok=True)
     if os.path.isdir(folder_path):
         print("文件夹存在")
-        folder_path = folder_path + current_year
+        folder_path = folder_path + str(current_year)
     else:
         print("未存在")
         folder_path = folder_path + "2025"
