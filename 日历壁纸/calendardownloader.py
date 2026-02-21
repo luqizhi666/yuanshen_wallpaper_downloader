@@ -54,6 +54,7 @@ while not(last_src in title_elements):
         print("Loading more news...")
         # 获取标题列表
         title_elements = driver.find_elements(By.CLASS_NAME, "news__title")
+        print(title_elements)
         time.sleep(3)
     except:
         print("点击加载失败")
