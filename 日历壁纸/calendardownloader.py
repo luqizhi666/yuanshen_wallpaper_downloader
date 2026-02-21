@@ -8,6 +8,10 @@ import requests
 import time
 import re
 import sys
+from datetime import datetime
+
+# 获取当前年份
+current_year = datetime.now().year
 
 # 设置控制台编码为 UTF-8
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -90,7 +94,12 @@ for link in should_download:
     folder_name = re.sub(r'[\\/*?:"<>|]', "_", title)
     folder_path = os.path.join(os.getcwd(), folder_name)
     os.makedirs(folder_path, exist_ok=True)
-
+    if os.path.isdir(folder_path):
+        print("文件夹存在")
+        folder_path = folder_path + current_year
+    else:
+        print("未存在")
+        folder_path = folder_path + "2025"
     # 下载图片
     for idx, img in enumerate(imgs, 1):
         src = img.get_attribute("src")
